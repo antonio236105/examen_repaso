@@ -1,7 +1,7 @@
 
 services:
   examen:
-    image: xxxxxx/yyyyyyyyyy
+    image: antonio2306/examen1
     ports:
       - 80:8000
     restart: always
