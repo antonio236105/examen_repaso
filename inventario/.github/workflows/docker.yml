@@ -41,17 +41,17 @@ jobs:
     - name: copy docker compose via ssh key  
       uses: appleboy/scp-action@v0.1.7
       with:
-        host: ${{ secrets.EC2_IP_REC }}
+        host: ${{ secrets.EC2_IP_REP }}
         username: ${{ secrets.EC2_USER_REP }}
         port: 22 # ${{ secrets.PORT }}
         key: ${{ secrets.EC2_KEY_REP }}
         source: "compose.yaml" #nombre del fichero en el repositorio en workflows
-        target: /home/ubuntu #aqui se copia el directorio donde se encuentra el en amazon
+        target: /home/admin #aqui se copia el directorio donde se encuentra el en amazon
     # 2
     - name: script deploy docker services 
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.EC2_IP_REC }}
+        host: ${{ secrets.EC2_IP_REP }}
         username: ${{ secrets.EC2_USER_REP }}
         key: ${{ secrets.EC2_KEY_REP}}
         port: 22  # ${{ secrets.PORT }}
