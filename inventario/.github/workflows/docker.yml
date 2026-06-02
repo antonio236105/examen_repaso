@@ -1,0 +1,61 @@
+e: Docker CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - inventario/app/**
+  pull_request:
+    branches: [ main ]
+    paths:
+      - inventario/app/**
+
+jobs:
+  build:
+    name: build and push Docker image
+    runs-on: ubuntu-latest
+    steps: 
+      # 1 
+      - uses: actions/checkout@v4
+      # 2  
+      - name: Login to DockerHub
+        uses: docker/login-action@v3 
+        with:
+          username: ${{ secrets.DHUB_USER_REP }}
+          password: ${{ secrets.DHUB_TOKEN_REP }}
+      # 3   
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true 
+          tags: ${{ secrets.DHUB_USER_REP }}/examen2
+          
+  aws:
+    name: Deploy image to aws
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    # 1
+    - name: copy docker compose via ssh key  
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_IP_REC }}
+        username: ${{ secrets.EC2_USER_REP }}
+        port: 22 # ${{ secrets.PORT }}
+        key: ${{ secrets.EC2_KEY_REP }}
+        source: "compose.yaml" #nombre del fichero en el repositorio en workflows
+        target: /home/ubuntu #aqui se copia el directorio donde se encuentra el en amazon
+    # 2
+    - name: script deploy docker services 
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_IP_REC }}
+        username: ${{ secrets.EC2_USER_REP }}
+        key: ${{ secrets.EC2_KEY_REP}}
+        port: 22  # ${{ secrets.PORT }}
+        script: |
+            sleep 60
+            docker compose down --rmi all
+            docker compose up -d
