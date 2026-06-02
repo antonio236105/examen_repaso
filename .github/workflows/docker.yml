@@ -45,7 +45,7 @@ jobs:
         username: ${{ secrets.EC2_USER_REP }}
         port: 22 # ${{ secrets.PORT }}
         key: ${{ secrets.EC2_KEY_REP }}
-        source: "compose.yaml" #nombre del fichero en el repositorio en workflows
+        source: "compose.yml" #nombre del fichero en el repositorio en workflows
         target: /home/admin #aqui se copia el directorio donde se encuentra el en amazon
     # 2
     - name: script deploy docker services 
